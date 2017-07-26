@@ -1,0 +1,8 @@
+{
+    "job": {
+        "servers": [
+            "10.87.180.22 root ott@20170601"
+        ],
+        "command": "zgrep -c 'promotion' /letv/logs/tomcat/iptv/tomcat1-httpClient.log{0}"
+    }
+}
