@@ -29,7 +29,7 @@ class ZGrep(Job):
 
     def map_job(self, worker):
         # 各worker结果暂存文件路径
-        temp_result_filepath = self.local_result_filepath + '-' + str(id(worker))
+        temp_result_filepath = self.local_result_filepath + '-' + str(worker.ip)
         # 获取worker结果文件到本地temp_result_filepath
         worker.get(self.remote_result_filepath, temp_result_filepath)
         self.local_result_filepaths.append(temp_result_filepath)
@@ -44,6 +44,12 @@ class ZGrep(Job):
         logger.info("[DISPATCHER] merge temp data from all workers".format(self.local_result_filepath))
         logger.info("[DISPATCHER] total count: {0}".format(self.occurrences))
         delete_files(self.local_result_filepaths)
+
+
+def zgrep(command, servers, date_str):
+    job = ZGrep(command, Dispatcher(servers), date_str=date_str)
+    job.do()
+    return job.occurrences
 
 
 if __name__ == '__main__':
@@ -61,7 +67,7 @@ if __name__ == '__main__':
     command = _command.format('.' + date_str + '.gz') if date_str else _command.format('')
     servers = cfg.get("job", {}).get("servers", '')
     _servers = [(server.split(' ')[0], server.split(' ')[1], server.split(' ')[2])
-               for server in servers if len(server.split(' ')) == 3]
+                for server in servers if len(server.split(' ')) == 3]
     servers = _servers if _servers else servers
     if not command or not servers:
         logger.error("miss required configuration")
@@ -70,10 +76,3 @@ if __name__ == '__main__':
         date_str = datetime.datetime.now().strftime('%Y-%m-%d')
     job = ZGrep(command, Dispatcher(servers), date_str=date_str)
     job.do()
-    mail = cfg.get("mail", {})
-    if mail and 'subject' in mail and 'content' in mail and 'to' in mail:
-        subject = mail.get('subject')
-        content = mail.get('content').format(date_str, job.occurrences)
-        to = mail.get('to')
-        cc = mail.get('cc')
-        send_mail(subject, content, to, cc)

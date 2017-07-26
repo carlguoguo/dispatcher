@@ -9,6 +9,7 @@ utils.py         -- 工具类，文件、邮件相关辅助工具类
 zgrep.py         -- 继承自Job的具体任务类，重写父类中的map_job,reduce_job
 configs/         -- 具体任务依赖的配置类，规定为json格式，定义机器信息、命令信息、邮件信息等
 requirements.txt -- 依赖列表
+cron/            -- 具体任务
 
 【待办】
 完成MultiProcessDispatcher，从而实现多路复用+多进程模式；
