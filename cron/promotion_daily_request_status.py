@@ -43,6 +43,10 @@ cfg = {
       "10.183.196.92",
       "10.183.196.93"
     ],
+    "commands": [
+        "zgrep -c 'promotion' /letv/logs/tomcat/iptv/tomcat1-httpClient.log{0}",
+        "zgrep 'promotion' /letv/logs/tomcat/iptv/tomcat1-httpClient.log{0} | grep -vc '|200|'"
+    ],
     "mail": {
         "subject": u"观星失败请求量",
         "content": u"{0}当天总请求次数：{1} 失败请求次数：{2}",
