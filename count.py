@@ -4,8 +4,6 @@ import argparse
 import sys
 import logging
 
-import datetime
-
 from dispatcher import Dispatcher
 from job import Job
 from utils import delete_files, load_cfg
@@ -15,15 +13,14 @@ handler = logging.StreamHandler()
 formatter = logging.Formatter('%(asctime)s %(name)-12s %(levelname)-8s %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.propagate = False
 
 
 class ZGrep(Job):
 
-    def __init__(self, command, dispatcher, date_str):
+    def __init__(self, command, dispatcher):
         self.local_result_filepaths = []
-        self.date_str = date_str
         self.occurrences = 0
         Job.__init__(self, command, dispatcher)
 
@@ -46,33 +43,33 @@ class ZGrep(Job):
         delete_files(self.local_result_filepaths)
 
 
-def zgrep(command, servers, date_str):
-    job = ZGrep(command, Dispatcher(servers), date_str=date_str)
+def init_args():
+    parser = argparse.ArgumentParser(description='Count specific keyword among remote server logs')
+    parser.add_argument('-k', help='keyword')
+    parser.add_argument('-f', help='filename e.g.tomcat1-httpClient.log')
+    parser.add_argument('-c', help='config file')
+    args = parser.parse_args()
+    return args.k, args.f, args.c or 'config.json'
+
+
+def zgrep(command, servers):
+    job = ZGrep(command, Dispatcher(servers))
     job.do()
     return job.occurrences
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Count specific keyword among remote server logs')
-    parser.add_argument('-c', help='configuration file name')
-    parser.add_argument('-d', help='date string; e.g 2017-09-01')
-    args = parser.parse_args()
-    cfg_file = args.c
-    date_str = args.d
-
+    keyword, log_file, cfg_file = init_args()
     cfg = load_cfg(cfg_file)
     if not cfg:
         sys.exit(0)
-    _command = cfg.get("job", {}).get("command", '')
-    command = _command.format('.' + date_str + '.gz') if date_str else _command.format('')
-    servers = cfg.get("job", {}).get("servers", '')
+    servers = cfg.get("servers", [])
     _servers = [(server.split(' ')[0], server.split(' ')[1], server.split(' ')[2])
                 for server in servers if len(server.split(' ')) == 3]
     servers = _servers if _servers else servers
-    if not command or not servers:
+    if not servers:
         logger.error("miss required configuration")
         sys.exit(0)
-    if not date_str:
-        date_str = datetime.datetime.now().strftime('%Y-%m-%d')
-    job = ZGrep(command, Dispatcher(servers), date_str=date_str)
+    command = "zgrep -c '{0}' {1}".format(keyword, log_file)
+    job = ZGrep(command, Dispatcher(servers))
     job.do()

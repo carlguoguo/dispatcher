@@ -36,4 +36,4 @@ class Job:
         current = time.time()
         logger.info("[DISPATCHER] start doing job")
         self.dispatcher.execute(self.command, self.map_job, self.reduce_job)
-        logger.info("[DISPATCHER] finish cron within: {0}s".format(time.time() - current))
+        logger.info("[DISPATCHER] finish job within: {0}s".format(time.time() - current))

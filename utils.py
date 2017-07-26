@@ -66,7 +66,3 @@ def send_mail(subject, content, mailto, cc):
     except Exception, e:
         logger.error("failed to send email [{0}]".format(e))
         return False
-
-
-if __name__ == '__main__':
-    send_mail(u'观星失败请求量', u'邮差小易温馨提示：建议您绿色地使用邮箱，请适当修改标题和内容，再尝试发送。')
