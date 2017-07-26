@@ -18,5 +18,6 @@ Python2.7
 
 【运行方式】
 cd dispatcher
+pip install -r requirements.txt
 python zgrep.py -c test -d 2017-07-24
 (入参帮助请查：python zgrep.py -h)

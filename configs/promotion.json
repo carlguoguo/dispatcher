@@ -39,6 +39,8 @@
     },
     "mail": {
         "subject": "观星失败请求量",
-        "content": "{0}当天失败请求次数：{1}"
+        "content": "{0}当天失败请求次数：{1}",
+        "to": "guoyunfeng@le.com;dengliwei@le.com;maning5@le.com",
+        "cc": "zhuyi3@le.com"
     }
 }

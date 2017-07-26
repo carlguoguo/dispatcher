@@ -42,7 +42,7 @@ def load_cfg(cfg):
     return data
 
 
-def send_mail(subject, content, mailto_list=['guoyunfeng@le.com']):
+def send_mail(subject, content, mailto, cc):
     mail_host = "smtp.163.com"  # 使用的邮箱的smtp服务器地址，这里是163的smtp地址
     mail_user = "le_ott"  # 用户名
     mail_pass = "ott123456"  # 密码
@@ -50,7 +50,12 @@ def send_mail(subject, content, mailto_list=['guoyunfeng@le.com']):
     msg = MIMEText(content, 'plain', 'utf-8')
     msg['Subject'] = subject
     msg['From'] = mail_from
-    msg['To'] = ";".join(mailto_list)  # 将收件人列表以‘；’分隔
+    msg['To'] = mailto  # 将收件人列表以‘；’分隔
+    msg['CC'] = cc
+    mailto_list = mailto.split(';') if ';' in mailto else [mailto]
+    if cc:
+        cc_list = cc.split(';') if ';' in cc else [cc]
+        mailto_list = mailto_list + cc_list
     try:
         server = smtplib.SMTP()
         server.connect(mail_host)  # 连接服务器

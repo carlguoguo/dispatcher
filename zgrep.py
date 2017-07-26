@@ -71,5 +71,9 @@ if __name__ == '__main__':
     job = ZGrep(command, Dispatcher(servers), date_str=date_str)
     job.do()
     mail = cfg.get("mail", {})
-    if mail and 'subject' in mail and 'content' in mail:
-        send_mail(mail.get('subject'), mail.get('content').format(date_str, job.occurrences))
+    if mail and 'subject' in mail and 'content' in mail and 'to' in mail:
+        subject = mail.get('subject')
+        content = mail.get('content').format(date_str, job.occurrences)
+        to = mail.get('to')
+        cc = mail.get('cc')
+        send_mail(subject, content, to, cc)
