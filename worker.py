@@ -4,7 +4,7 @@
 import logging
 
 import paramiko
-from paramiko.ssh_exception import AuthenticationException
+from paramiko.ssh_exception import AuthenticationException, SSHException
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
@@ -42,6 +42,9 @@ class Worker:
                 _connect.connect(self.ip, timeout=timeout)
             self.connection = _connect
         except AuthenticationException, e:
+            logger.error(e)
+            self.connection = None
+        except SSHException, e:
             logger.error(e)
             self.connection = None
 
