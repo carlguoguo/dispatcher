@@ -8,7 +8,7 @@ import datetime
 
 from dispatcher import Dispatcher
 from job import Job
-from utils import delete_files, send_mail, load_cfg
+from utils import delete_files, load_cfg
 
 logger = logging.getLogger(__name__)
 handler = logging.StreamHandler()
