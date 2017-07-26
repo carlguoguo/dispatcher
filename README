@@ -1,3 +1,6 @@
+【项目简介】
+提供远程集群服务器运行命令的框架，支持非阻塞IO，异步响应；具体任务需要继承job.Job类，重写map_job、reduce_job来完成具体命令完成后所需要做的分发聚合操作
+
 【项目结构】
 worker.py        -- 工人类，一个worker对应一台远程机器，该类是paramiko简单封装，执行ssh等相关远程命令操作
 dispatcher.py    -- 分发器，职责：通过多路复用(Select)非阻塞监听worker的响应，执行后续操作
