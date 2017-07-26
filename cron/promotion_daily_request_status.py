@@ -52,8 +52,8 @@ cfg = {
     "mail": {
         "subject": u"观星失败请求量",
         "content": u"{0}当天总请求次数：{1} 失败请求次数：{2}",
-        "to": "guoyunfeng@le.com",
-        "cc": "780647243@qq.com"
+        "to": "guoyunfeng@le.com;dengliwei@le.com;maning5@le.com;caidongfang@le.com",
+        "cc": "zhuyi3@le.com"
     }
 }
 

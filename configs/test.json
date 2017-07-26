@@ -4,11 +4,5 @@
             "10.87.180.22 root ott@20170601"
         ],
         "command": "zgrep -c 'promotion' /letv/logs/tomcat/iptv/tomcat1-httpClient.log{0}"
-    },
-    "mail": {
-        "subject": "观星请求量统计",
-         "content": "{0}当天总请求次数：{1} 失败请求次数：{2}",
-        "to": "guoyunfeng@le.com",
-        "cc": "780647243@qq.com"
     }
 }
