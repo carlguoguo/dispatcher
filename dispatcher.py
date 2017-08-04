@@ -44,7 +44,7 @@ class Dispatcher(object):
                 worker.connect()
                 channel = worker.exec_command(command)
                 if channel:
-                    self.to_do_workers.append(channel)
+                    self.to_do_workers.append(worker)
                 self.unready_fd_workers_dict[channel] = worker
             except OSError, e:
                 logger.error(e)
@@ -55,13 +55,17 @@ class Dispatcher(object):
                 break
             if self.is_all_workers_finish():
                 logger.info("[DISPATCHER] all workers done")
-                reduce_job()
+                done_workers = self.to_do_workers
+                reduce_job(done_workers)
                 break
 
             readables, writables, exceptionals = select.select(self.unready_fd_workers_dict.keys(), [], [])
-            finished_workers = [self.unready_fd_workers_dict.pop(readable) for readable in readables]
-            logger.info("[DISPATCHER] received data from {0}".format([worker.ip for worker in finished_workers]))
-            map(map_job, finished_workers)
+            if len(readables) > 0:
+                for readable in readables:
+                    worker = self.unready_fd_workers_dict.pop(readable)
+                    worker.done()
+                    logger.info("[DISPATCHER] received data from {0}".format(worker.ip))
+                    map_job(worker)
 
 
 def _connect_and_exec(command, unready_fd_workers_dict, worker):

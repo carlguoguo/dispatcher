@@ -21,6 +21,8 @@ class Worker:
         self.username = username if username else 'root'
         self.password = password
         self.connection = None
+        self._channel = None  # 交互的fd
+        self.result = None
         logger.debug("[DISPATCHER] init dispatcher [{0}]".format(self.ip))
 
     def _get_sftp(self):
@@ -55,13 +57,28 @@ class Worker:
         if not self.is_connected():
             logger.error("[NODE {0}] connection error".format(self.ip))
             return None
-        _channel = self.connection.get_transport().open_session()
-        _channel.exec_command(command)
+        self._channel = self.connection.get_transport().open_session()
+        self._channel.exec_command(command)
         logger.info('[NODE {0}] start executing command [{1}]'.format(self.ip, command))
-        return _channel
+        return self._channel
 
     def get(self, filepath, local_path):
         sftp = self._get_sftp()
         logger.info('[NODE {0}] fetch resource [{1}]'.format(self.ip, filepath))
         sftp.get(filepath, local_path)
         logger.info('[NODE {0}] copy to local path [{1}]'.format(self.ip, local_path))
+
+    def get_result(self):
+        if self.result:
+            return self.result
+        else:
+            logger.error('[NODE {0}] no result'.format(self.ip))
+            return None
+
+    def done(self):
+        if not self._channel:
+            logger.error('[NODE {0}] channel is null, may be closed already'.format(self.ip))
+        else:
+            self.result = self._channel.recv(1024)
+
+

@@ -10,30 +10,32 @@ from count import count
 cfg = {
     "job": {
         "commands": [
-            "zgrep -c 'promotion' /letv/logs/tomcat/iptv/tomcat1-httpClient.log{0}",
-            "zgrep 'promotion' /letv/logs/tomcat/iptv/tomcat1-httpClient.log{0} | grep -vc '|200|'"
+            "wc -l /letv/logs/nginx/host.access.log-{0}.gz | awk '{{print $1}}'",
         ],
     },
-    "mail": {
-        "subject": u"观星失败请求量",
-        "content": u"{0}当天总请求次数：{1} 失败请求次数：{2}",
-        "to": "guoyunfeng@le.com;dengliwei@le.com;maning5@le.com;caidongfang@le.com",
-        "cc": "zhuyi3@le.com"
-    }
+    # "mail": {
+    #     "subject": u"请求统计",
+    #     "content": u"{0}当天VV：{1}",
+    #     "to": "guoyunfeng@le.com",
+    # }
 }
 
 
 def init_args():
     parser = argparse.ArgumentParser(description='Count specific keyword among remote server logs')
-    parser.add_argument('-d', help='date string; e.g 2017-09-01')
+    parser.add_argument('-d', help='date string; e.g 20170901')
     parser.add_argument('-c', help='config file')
     args = parser.parse_args()
     return args.d, args.c or 'config.json'
 
 if __name__ == '__main__':
     date_str, cfg_file = init_args()
+    # 如果不给日期，视为前一天
+    if not date_str:
+        date_str = datetime.date.today() - datetime.timedelta(days=1)
+        date_str = date_str.strftime('%Y%m%d');
     _commands = cfg.get("job", {}).get("commands", [])
-    commands = [_command.format('.' + date_str + '.gz') if date_str else _command.format('') for _command in _commands]
+    commands = [_command.format(date_str) if date_str else _command.format('') for _command in _commands]
     global_cfg = load_cfg(cfg_file)
     if not global_cfg:
         sys.exit(0)
@@ -47,13 +49,12 @@ if __name__ == '__main__':
     if not date_str:
         date_str = datetime.date.today() - datetime.timedelta(days=1)
 
-    total_requests = count(commands[0], servers)
-    failed_requests = count(commands[1], servers)
+    vv = count(commands[0], servers)
 
     mail = cfg.get("mail", {})
     if mail and 'subject' in mail and 'content' in mail and 'to' in mail:
         subject = mail.get('subject')
-        content = mail.get('content', '').format(date_str, total_requests, failed_requests)
+        content = mail.get('content', '').format(date_str, vv)
         to = mail.get('to')
         cc = mail.get('cc')
         send_mail(subject, content, to, cc)

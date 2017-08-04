@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import os
 import logging
 import time
-import hashlib
 
 
 logger = logging.getLogger(__name__)
@@ -18,10 +16,7 @@ logger.propagate = False
 class Job:
 
     def __init__(self, command, dispatcher):
-        result_filename = hashlib.md5(command).hexdigest()
-        self.remote_result_filepath = '/tmp/{0}'.format(result_filename)
-        self.local_result_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), result_filename)
-        self.command = command + ' > {0}'.format(self.remote_result_filepath)
+        self.command = command
         self.dispatcher = dispatcher
 
     # 强制重写
@@ -29,7 +24,7 @@ class Job:
         raise NotImplementedError
 
     # 强制重写
-    def reduce_job(self):
+    def reduce_job(self, workers):
         raise NotImplementedError
 
     def do(self):
