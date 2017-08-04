@@ -1,16 +1,17 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
-import sys
 import datetime
+import sys
 
+from tools.count import count
 from utils import logger, send_mail, load_cfg
-from count import count
 
 cfg = {
     "job": {
         "commands": [
             "wc -l /letv/logs/nginx/host.access.log-{0}.gz | awk '{{print $1}}'",
+            "awk '{print $1}' access.log|sort |uniq |wc -l",
         ],
     },
     # "mail": {

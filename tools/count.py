@@ -38,8 +38,8 @@ class Count(Job):
 
 def init_args():
     parser = argparse.ArgumentParser(description='Count specific keyword among remote server logs')
-    parser.add_argument('-k', help='keyword')
-    parser.add_argument('-f', help='filename e.g.tomcat1-httpClient.log')
+    parser.add_argument('-k', help='keyword', required=True)
+    parser.add_argument('-f', help='filename e.g.tomcat1-httpClient.log', required=True)
     parser.add_argument('-c', help='config file')
     args = parser.parse_args()
     return args.k, args.f, args.c or 'config.json'

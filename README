@@ -1,15 +1,16 @@
 【项目简介】
 提供远程集群服务器运行命令的框架，支持非阻塞IO，异步响应；具体任务需要继承job.Job类，重写map_job、reduce_job来完成具体命令完成后所需要做的分发聚合操作
+tools/count.py为其中一个实现类，具体任务是，给定keyword，给定远端服务器上的文件名，查出现频次
 
 【项目结构】
-worker.py        -- 工人类，一个worker对应一台远程机器，该类是paramiko简单封装，执行ssh等相关远程命令操作
-dispatcher.py    -- 分发器，职责：通过多路复用(Select)非阻塞监听worker的响应，执行后续操作
-job.py           -- 任务类，定义任务协议，核心思想是把集群任务分治化，通过map_job分任务映射到每一个worker,reduce_job完成组合计算的任务，注：该类强制子类重写map_job、reduce_job方法
-utils.py         -- 工具类，文件、邮件相关辅助工具类
-count.py         -- 继承自Job的具体任务类，搜索关键字计行数，重写父类中的map_job,reduce_job
-configs/         -- 具体任务依赖的配置类，规定为json格式，定义机器信息、命令信息、邮件信息等
-requirements.txt -- 依赖列表
+configs/         -- 具体任务依赖的配置类，规定为json格式，定义机器信息，可做环境隔离
 cron/            -- 具体cron任务
+tools/           -- 具体框架实现类，目前有count.py统计文件中关键字出现频次
+dispatcher.py    -- 分发器，职责：为一个Job提供分发器，分发命令，通过多路复用(Select)非阻塞监听worker的响应，执行后续操作
+job.py           -- 任务类，定义任务协议，核心思想是把集群任务分治化，通过map_job分任务映射到每一个worker,reduce_job完成组合计算的任务，注：该类强制子类重写map_job、reduce_job方法
+requirements.txt -- 依赖列表
+utils.py         -- 工具类，文件、邮件相关辅助工具类
+worker.py        -- 工人类，一个worker对应一台远程机器，该类是paramiko简单封装，执行ssh等相关远程命令操作
 
 【待办】
 完成MultiProcessDispatcher，从而实现多路复用+多进程模式；
@@ -17,8 +18,8 @@ cron/            -- 具体cron任务
 【环境】
 Python2.7
 
-【运行方式】
+【运行count.py方式】
 cd dispatcher
 pip install -r requirements.txt
-python count.py -k 'promotion' -f /letv/logs/tomcat/iptv/tomcat1-httpClient.log -c test
-(入参帮助请查：python zgrep.py -h)
+python -m tools.count -k 'promotion' -f /letv/logs/tomcat/iptv/tomcat1-httpClient.log -c test
+(入参帮助请查：python -m tools.count -h)

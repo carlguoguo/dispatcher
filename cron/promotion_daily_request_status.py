@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import argparse
-import sys
 import datetime
+import sys
 
+from tools.count import count
 from utils import logger, send_mail, load_cfg
-from count import count
 
 cfg = {
     "job": {
