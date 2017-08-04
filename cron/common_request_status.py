@@ -33,7 +33,7 @@ if __name__ == '__main__':
     # 如果不给日期，视为前一天
     if not date_str:
         date_str = datetime.date.today() - datetime.timedelta(days=1)
-        date_str = date_str.strftime('%Y%m%d');
+        date_str = date_str.strftime('%Y%m%d')
     _commands = cfg.get("job", {}).get("commands", [])
     commands = [_command.format(date_str) if date_str else _command.format('') for _command in _commands]
     global_cfg = load_cfg(cfg_file)

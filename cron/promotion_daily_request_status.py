@@ -15,7 +15,7 @@ cfg = {
         ],
     },
     "mail": {
-        "subject": u"观星失败请求量",
+        "subject": u"{0}观星失败请求量",
         "content": u"{0}当天总请求次数：{1} 失败请求次数：{2}",
         "to": "guoyunfeng@le.com;dengliwei@le.com;maning5@le.com;caidongfang@le.com",
         "cc": "zhuyi3@le.com"
@@ -33,6 +33,10 @@ def init_args():
 if __name__ == '__main__':
     date_str, cfg_file = init_args()
     _commands = cfg.get("job", {}).get("commands", [])
+    # 如果不给日期，视为前一天
+    if not date_str:
+        date_str = datetime.date.today() - datetime.timedelta(days=1)
+        date_str = date_str.strftime('%Y-%m-%d')
     commands = [_command.format('.' + date_str + '.gz') if date_str else _command.format('') for _command in _commands]
     global_cfg = load_cfg(cfg_file)
     if not global_cfg:
@@ -44,15 +48,13 @@ if __name__ == '__main__':
     if not commands or not servers:
         logger.error("miss required configuration")
         sys.exit(0)
-    if not date_str:
-        date_str = datetime.date.today() - datetime.timedelta(days=1)
 
     total_requests = count(commands[0], servers)
     failed_requests = count(commands[1], servers)
 
     mail = cfg.get("mail", {})
     if mail and 'subject' in mail and 'content' in mail and 'to' in mail:
-        subject = mail.get('subject')
+        subject = mail.get('subject', '').format(date_str)
         content = mail.get('content', '').format(date_str, total_requests, failed_requests)
         to = mail.get('to')
         cc = mail.get('cc')
