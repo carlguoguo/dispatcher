@@ -43,10 +43,10 @@ def load_cfg(cfg):
 
 
 def send_mail(subject, content, mailto, cc):
-    mail_host = "smtp.163.com"  # 使用的邮箱的smtp服务器地址，这里是163的smtp地址
-    mail_user = "le_ott"  # 用户名
-    mail_pass = "ott123456"  # 密码
-    mail_from = "le_ott@163.com"
+    mail_host = "smtp.letv.cn"
+    mail_user = "letv_monitor"  # 用户名
+    mail_pass = "!@s20170731"  # 密码
+    mail_from = "letv_monitor@le.com"
     msg = MIMEText(content, 'plain', 'utf-8')
     msg['Subject'] = subject
     msg['From'] = mail_from
